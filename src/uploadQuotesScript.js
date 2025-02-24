@@ -12,7 +12,7 @@ export const uploadQuotesScript = () => {
     try {
       await addDoc(quotesCollectionRef, { ...quote, likedBy: [], dislikedBy: []});
       counter++;
-      console.log(`Added quote #${counter}: ${quote.quote}`); // Eklenen alıntıyı konsola yazdır
+      console.log(`Added quote #${counter}: ${quote.quote}`); 
     } catch (error) {
       console.error("Error adding quote:", error);
     } finally {

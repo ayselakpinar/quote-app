@@ -15,7 +15,7 @@ body {
   text-align: center;
 }
 
-/* Genel App Tasarımı */
+
 .App {
   display: flex;
   flex-direction: column;
@@ -23,10 +23,10 @@ body {
   align-items: center;
   height: 100vh;
   width: 100vw;
-  padding-top: 60px; /* Added padding to prevent navbar overlap */
+  padding-top: 60px; 
 }
 
-/* Navigasyon Bar */
+
 .nav--top {
   display: flex;
   justify-content: flex-end;
@@ -39,7 +39,7 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 10; /* Ensures navbar stays on top */
+  z-index: 10; 
 }
 
 .nav-btn {
@@ -49,7 +49,7 @@ body {
   color: #ff4081;
   cursor: pointer;
   transition: color 0.3s ease, transform 0.2s;
-  margin-left: 20px; /* Spacing between buttons */
+  margin-left: 20px; 
 }
 
 .nav-btn:hover {
@@ -57,7 +57,7 @@ body {
   transform: scale(1.1);
 }
 
-/* Butonlar */
+
 button {
   background-color: #ff80ab;
   color: white;
@@ -85,7 +85,7 @@ button:active {
   transform: scale(0.95);
 }
 
-/* Esnek Kolon Tasarımı */
+
 .flex-column {
   display: flex;
   flex-direction: column;

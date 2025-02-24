@@ -5,13 +5,13 @@ import { UserPage } from "./components/UserPage/index.jsx";
 import { Home } from "./components/Home/index.jsx";
 import { Login } from "./components/Login/index.jsx";
 import { Register } from "./components/Register/index.jsx";
-import { UserContext, UserDispatchContext, UserActionTypes, UserContextProvider } from "./UserContext.jsx";  // UserContextProvider'ı import ettik
+import { UserContext, UserDispatchContext, UserActionTypes, UserContextProvider } from "./UserContext.jsx"; 
 import "./App.css";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
-  const user = useContext(UserContext);  // Kullanıcı bilgilerini context'ten al
-  const dispatch = useContext(UserDispatchContext); // dispatch fonksiyonunu al
+  const user = useContext(UserContext);  
+  const dispatch = useContext(UserDispatchContext); 
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -44,7 +44,7 @@ function App() {
   }
 
   return (
-    // UserContextProvider ile sarıyoruz
+   
     <UserContextProvider>
       <div className="App">
         <nav className="nav--top">
@@ -75,14 +75,12 @@ function App() {
             </>
           )}
         </nav>
-
-        {/* Sayfa Rendering */}
         {currentPage === "home" && <Home />}
         {currentPage === "user" && <UserPage />}
         {currentPage === "login" && <Login setCurrentPage={setCurrentPage} />}
         {currentPage === "register" && <Register setCurrentPage={setCurrentPage} />}
       </div>
-    </UserContextProvider> // UserContextProvider ile sarmalamayı unutmuyoruz
+    </UserContextProvider> 
   );
 }
 

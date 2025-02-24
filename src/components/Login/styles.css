@@ -1,11 +1,11 @@
 body {
-  background-color: #fce4ec; /* Soft pastel pink */
+  background-color: #fce4ec; 
   font-family: 'Comic Sans MS', cursive, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  margin: 0; /* Make sure there's no margin around the body */
+  margin: 0; 
 }
 
 .App {
@@ -14,18 +14,18 @@ body {
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding-top: 60px; /* Adjust padding to prevent navbar overlap */
+  padding-top: 60px; 
 }
 
-/* Header (h1) */
+
 h1 {
-  margin-top: 120px; /* Adjusting space between navbar and title */
+  margin-top: 120px; 
   font-size: 2rem;
-  color: #ff4081; /* Kawaii pink */
+  color: #ff4081; 
   text-align: center;
 }
 
-/* Form Styles */
+
 .form {
   margin: auto;
   display: flex;
@@ -34,37 +34,37 @@ h1 {
   max-width: 500px;
   padding: 40px;
   border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.8); /* White background with opacity */
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for a cute effect */
+  background-color: rgba(255, 255, 255, 0.8); 
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
 }
 
 .form-input {
   margin-bottom: 20px;
   padding: 12px;
-  border: 1px solid #f8a5c2; /* Soft pink border */
+  border: 1px solid #f8a5c2; 
   border-radius: 10px;
-  background-color: #fff; /* Clean white for inputs */
+  background-color: #fff; 
   font-size: 1rem;
   outline: none;
   transition: border 0.3s ease;
 }
 
 .form-input:focus {
-  border-color: #ff80ab; /* Soft pink border when focused */
+  border-color: #ff80ab; 
 }
 
 .form-label {
   margin-bottom: 8px;
   align-self: flex-start;
   font-size: 1.1rem;
-  color: #ff4081; /* Kawaii pink for labels */
+  color: #ff4081; 
 }
 
 .btn--primary {
   padding: 12px 20px;
   border: none;
-  border-radius: 25px; /* Round edges for a cute effect */
-  background-color: #f8a5c2; /* Pastel pink background */
+  border-radius: 25px;
+  background-color: #f8a5c2; 
   color: white;
   cursor: pointer;
   font-size: 1.1rem;
@@ -73,7 +73,7 @@ h1 {
 }
 
 .btn--primary:hover {
-  background-color: #ff80ab; /* Darker pink on hover */
+  background-color: #ff80ab; 
   transform: scale(1.05);
 }
 
@@ -82,7 +82,7 @@ h1 {
 }
 
 .error {
-  color: #ff4081; /* Bright pink for error messages */
+  color: #ff4081;
   font-size: 1rem;
   margin-top: 10px;
   font-weight: bold;

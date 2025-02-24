@@ -4,7 +4,7 @@ import { quotes } from "../../quotes";
 
 export const UserPage = () => {
   const user = useContext(UserContext);
-  const likedQuoteIds = user.likedQuotes; // array of quote ids
+  const likedQuoteIds = user.likedQuotes; 
 
   const likedQuotes = quotes.filter((quote) => likedQuoteIds.includes(quote.id));
 
