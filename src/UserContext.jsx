@@ -1,76 +1,57 @@
-// UserContext.jsx
+import React, { createContext, useReducer, useContext } from 'react';
 
-import { createContext, useReducer } from "react";
+// İlk durum
+const initialState = {
+  user: null,
+  likedQuotes: [],
+  dislikedQuotes: [],
+};
 
-// Kullanıcı verilerini saklayacağımız context
+// Action types
+export const UserActionTypes = {
+  SetUser: 'SET_USER',
+  UpdateLikedQuotes: 'UPDATE_LIKED_QUOTES',
+  UpdateDislikedQuotes: 'UPDATE_DISLIKED_QUOTES',
+};
+
+// Reducer
+const userReducer = (state, action) => {
+  switch (action.type) {
+    case UserActionTypes.SetUser:
+      return { ...state, user: action.payload };
+    case UserActionTypes.UpdateLikedQuotes:
+      return { ...state, likedQuotes: [...state.likedQuotes, action.payload.id] };
+    case UserActionTypes.UpdateDislikedQuotes:
+      return { ...state, dislikedQuotes: [...state.dislikedQuotes, action.payload.id] };
+    default:
+      return state;
+  }
+};
+
+// Context'ler
 export const UserContext = createContext();
 export const UserDispatchContext = createContext();
 
-// Action type'ları
-export const UserActionTypes = {
-  SetUser: "SET_USER",
-  UpdateLikedQuotes: "UPDATE_LIKED_QUOTES",
-  UpdateDislikedQuotes: "UPDATE_DISLIKED_QUOTES",
-};
-
-// Kullanıcı state'ini yöneten reducer
-function userReducer(state, action) {
-  switch (action.type) {
-    case UserActionTypes.SetUser:
-      return { 
-        ...action.payload, 
-        likedQuotes: state.likedQuotes || [], 
-        dislikedQuotes: state.dislikedQuotes || [] 
-      };
-    case UserActionTypes.UpdateLikedQuotes:
-      if (state.dislikedQuotes.includes(action.payload.id)) {
-        const updatedDislikedQuotes = state.dislikedQuotes.filter(
-          (dislikedQuoteId) => dislikedQuoteId !== action.payload.id
-        );
-        return {
-          ...state,
-          likedQuotes: [...state.likedQuotes, action.payload.id],
-          dislikedQuotes: updatedDislikedQuotes,
-        };
-      }
-      return {
-        ...state,
-        likedQuotes: [...state.likedQuotes, action.payload.id],
-      };
-    case UserActionTypes.UpdateDislikedQuotes:
-      if (state.likedQuotes.includes(action.payload.id)) {
-        const updatedLikedQuotes = state.likedQuotes.filter(
-          (likedQuoteId) => likedQuoteId !== action.payload.id
-        );
-        return {
-          ...state,
-          dislikedQuotes: [...state.dislikedQuotes, action.payload.id],
-          likedQuotes: updatedLikedQuotes,
-        };
-      }
-      return {
-        ...state,
-        dislikedQuotes: [...state.dislikedQuotes, action.payload.id],
-      };
-    default:
-      throw Error(`Action type ${action.type} is not supported`);
-  }
-}
-
-// HOC - Higher Order Component (UserProvider)
-export const UserProvider = ({ children }) => {
-  const [user, dispatch] = useReducer(userReducer, { 
-    user: null, 
-    likedQuotes: [], 
-    dislikedQuotes: [] 
-  });
+// Provider
+export const UserContextProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(userReducer, initialState);
 
   return (
-    <UserContext.Provider value={user}>
+    <UserContext.Provider value={state}>
       <UserDispatchContext.Provider value={dispatch}>
         {children}
       </UserDispatchContext.Provider>
     </UserContext.Provider>
   );
 };
+
+// Kullanıcı context'ini almak için custom hook
+export const useUserContext = () => {
+  return useContext(UserContext);
+};
+
+export const useUserDispatchContext = () => {
+  return useContext(UserDispatchContext);
+};
+
 
