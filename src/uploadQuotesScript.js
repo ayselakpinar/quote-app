@@ -1,6 +1,8 @@
-import { db } from "./firebase/config";
-import { quotes } from "./quotes";
+import { db } from "./firebase/config.js";
+import { quotes } from "./quotes.js";
 import { addDoc, collection } from "firebase/firestore";
+
+console.log("⚡ Script başlatıldı...");
 
 export const uploadQuotesScript = () => {
   const quotesCollectionRef = collection(db, "quotes");
@@ -10,6 +12,7 @@ export const uploadQuotesScript = () => {
     try {
       await addDoc(quotesCollectionRef, { ...quote, likedBy: [], dislikedBy: []});
       counter++;
+      console.log(`Added quote #${counter}: ${quote.quote}`); // Eklenen alıntıyı konsola yazdır
     } catch (error) {
       console.error("Error adding quote:", error);
     } finally {

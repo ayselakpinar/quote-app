@@ -1,17 +1,19 @@
-import { useState, useEffect, useContext } from "react";
+// App.js
+
+import React, { useState, useEffect, useContext } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { logout, auth } from "./firebase/auth";
-import { UserPage } from "./components/UserPage";
-import { Home } from "./components/Home";
-import { Login } from "./components/Login";
-import { Register } from "./components/Register";
-import { UserContext, UserDispatchContext, UserActionTypes } from "./UserContext";
+import { logout, auth } from "./firebase/auth.js";
+import { UserPage } from "./components/UserPage/index.jsx";
+import { Home } from "./components/Home/index.jsx";
+import { Login } from "./components/Login/index.jsx";
+import { Register } from "./components/Register/index.jsx";
+import { UserContext, UserDispatchContext, UserActionTypes } from "./UserContext.jsx";
 import "./App.css";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
-  const user = useContext(UserContext);  // Get the current user from context
-  const dispatch = useContext(UserDispatchContext);
+  const user = useContext(UserContext);  // Kullanıcı bilgilerini context'ten al
+  const dispatch = useContext(UserDispatchContext); // dispatch fonksiyonunu al
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -45,13 +47,11 @@ function App() {
 
   return (
     <div className="App">
-      {/* Navigation Bar */}
       <nav className="nav--top">
         <button onClick={() => setCurrentPage("home")} className="nav-btn">
           Home
         </button>
 
-        {/* If user is logged in, show User and Logout buttons */}
         {user && user.user ? (
           <>
             <button onClick={() => setCurrentPage("user")} className="nav-btn">
@@ -62,7 +62,6 @@ function App() {
             </button>
           </>
         ) : (
-          // If not logged in, show Login and Register buttons
           <>
             <button onClick={() => setCurrentPage("login")} className="nav-btn">
               Login
@@ -77,7 +76,7 @@ function App() {
         )}
       </nav>
 
-      {/* Page Rendering */}
+      {/* Sayfa Rendering */}
       {currentPage === "home" && <Home />}
       {currentPage === "user" && <UserPage />}
       {currentPage === "login" && <Login setCurrentPage={setCurrentPage} />}
@@ -87,5 +86,3 @@ function App() {
 }
 
 export default App;
-
-
