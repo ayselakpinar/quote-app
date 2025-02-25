@@ -5,13 +5,18 @@ import { UserPage } from "./components/UserPage/index.jsx";
 import { Home } from "./components/Home/index.jsx";
 import { Login } from "./components/Login/index.jsx";
 import { Register } from "./components/Register/index.jsx";
-import { UserContext, UserDispatchContext, UserActionTypes, UserContextProvider } from "./UserContext.jsx"; 
+import {
+  UserContext,
+  UserDispatchContext,
+  UserActionTypes,
+} from "./UserContext.jsx";
 import "./App.css";
+import { uploadQuotesScript } from "./uploadQuotesScript.js";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
-  const user = useContext(UserContext);  
-  const dispatch = useContext(UserDispatchContext); 
+  const user = useContext(UserContext);
+  const dispatch = useContext(UserDispatchContext);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -44,8 +49,7 @@ function App() {
   }
 
   return (
-   
-    <UserContextProvider>
+    <>
       <div className="App">
         <nav className="nav--top">
           <button onClick={() => setCurrentPage("home")} className="nav-btn">
@@ -54,7 +58,10 @@ function App() {
 
           {user && user.user ? (
             <>
-              <button onClick={() => setCurrentPage("user")} className="nav-btn">
+              <button
+                onClick={() => setCurrentPage("user")}
+                className="nav-btn"
+              >
                 User
               </button>
               <button onClick={handleLogout} className="nav-btn">
@@ -63,7 +70,10 @@ function App() {
             </>
           ) : (
             <>
-              <button onClick={() => setCurrentPage("login")} className="nav-btn">
+              <button
+                onClick={() => setCurrentPage("login")}
+                className="nav-btn"
+              >
                 Login
               </button>
               <button
@@ -78,9 +88,13 @@ function App() {
         {currentPage === "home" && <Home />}
         {currentPage === "user" && <UserPage />}
         {currentPage === "login" && <Login setCurrentPage={setCurrentPage} />}
-        {currentPage === "register" && <Register setCurrentPage={setCurrentPage} />}
+        {currentPage === "register" && (
+          <Register setCurrentPage={setCurrentPage} />
+        )}
       </div>
-    </UserContextProvider> 
+      {/* Only add this button temporary on the main page to upload all quotes. Remove it after to avoid adding the quotes again.  */}
+      <button onClick={uploadQuotesScript}>upload quotes</button>
+    </>
   );
 }
 
