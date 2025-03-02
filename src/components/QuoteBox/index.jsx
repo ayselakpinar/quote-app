@@ -3,62 +3,120 @@ import {
     UserDispatchContext,
     UserActionTypes,
   } from "../../UserContext";
-  import { useContext } from "react";
+  import { useContext, useState, useEffect } from "react";
   import { doc, setDoc, query, collection, where, getDocs } from "firebase/firestore";
   import { db } from "../../firebase/config";
   
   export function QuoteBox({ id, quote, author, onNewQuoteClick }) {
-    const user = useContext(UserContext);
+    const { user } = useContext(UserContext);
     const dispatch = useContext(UserDispatchContext);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [likeCount, setLikeCount] = useState(0);
+    const [dislikeCount, setDislikeCount] = useState(0);
   
     const collectionReference = collection(db, "quotes");
-    async function handleLike() {
-      dispatch({ type: UserActionTypes.UpdateLikedQuotes, payload: { id } });
+  
+    useEffect(() => {
+      console.log("Current User in QuoteBox:", user);
+      if (user && user.id) {
+        setErrorMessage("");
+      }
+  
+      async function fetchQuoteData() {
+        const dbQuery = query(collectionReference, where("id", "==", id));
+        const querySnapshots = await getDocs(dbQuery);
+        if (!querySnapshots.empty) {
+          const docSnapshot = querySnapshots.docs[0];
+          const currentQuoteDocument = docSnapshot.data();
+  
+          setLikeCount(currentQuoteDocument.likedBy ? currentQuoteDocument.likedBy.length : 0);
+          setDislikeCount(currentQuoteDocument.dislikedBy ? currentQuoteDocument.dislikedBy.length : 0);
+        }
+      }
+  
+      fetchQuoteData();
+    }, [id, user]);
+  
+    async function handleVote(actionType) {
+      if (!user || !user.id) {
+        const message = "User is not logged in!";
+        setErrorMessage(message);
+        console.error(message);
+        return;
+      }
+  
+      const field = actionType === "like" ? "likedBy" : "dislikedBy";
+      const stateSetter = actionType === "like" ? setLikeCount : setDislikeCount;
+  
       try {
-        const dbQuery = query(
-          collectionReference,
-          where("id", "==", id)
+        const dbQuery = query(collectionReference, where("id", "==", id));
+        const querySnapshots = await getDocs(dbQuery);
+        if (querySnapshots.empty) throw new Error("Quote document not found");
+  
+        const docSnapshot = querySnapshots.docs[0];
+        const currentQuoteDocument = docSnapshot.data();
+        const userHasVoted = currentQuoteDocument[field]?.includes(user.id);
+  
+        if (userHasVoted) {
+          const message = `You already ${actionType}d this quote!`;
+          setErrorMessage(message);
+          console.log(message);
+          return;
+        }
+  
+        dispatch({
+          type: actionType === "like" ? UserActionTypes.UpdateLikedQuotes : UserActionTypes.UpdateDislikedQuotes,
+          payload: { id }
+        });
+  
+        const quoteDocRef = doc(db, "quotes", docSnapshot.id);
+        const updatedVotes = new Set(
+          Array.isArray(currentQuoteDocument[field]) ? currentQuoteDocument[field] : []
+        );
+        updatedVotes.add(user.id);
+  
+        const updatedData = { ...currentQuoteDocument, [field]: Array.from(updatedVotes) };
+  
+        Object.keys(updatedData).forEach(
+          key => updatedData[key] === undefined && delete updatedData[key]
         );
   
-        const querySnapshots = await getDocs(dbQuery);
-        if (querySnapshots.empty)  throw Error("Quote document is not found");
-  
-        const currentQuoteDocument = querySnapshots.docs.map(doc => doc.data())[0];
-  
-        const quoteDocRef = doc(db, "quotes", currentQuoteDocument.id);
-        await setDoc(quoteDocRef, { ...currentQuoteDocument, likedBy: [...currentQuoteDocument.likedBy, user.id] });
+        await setDoc(quoteDocRef, updatedData);
+        stateSetter(updatedVotes.size);
       } catch (error) {
-        console.error("Error getting quotes:", error);
+        const message = `Error updating ${actionType}: ${error.message}`;
+        setErrorMessage(message);
+        console.error(message);
       }
     }
   
+    const isLiked = user?.likedQuotes?.includes(id);
+    const isDisliked = user?.dislikedQuotes?.includes(id);
   
-    function handleDislike() {
-      dispatch({ type: UserActionTypes.UpdateDislikedQuotes, payload: { id } });
-      // TODO: update the quote document in the database to reflect like count
-    }
-  
-    // TODO: only show the like and dislike buttons if the user is logged in
-    // TODO: On the quote in the Database, keep track of the total like count.
-
     return (
       <>
+        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
         <div>
           <p>{quote}</p>
           <span>{author}</span>
-          <div>
-            <button disabled={user && user.likedQuotes && user.likedQuotes.includes(id)} onClick={handleLike}>
-            👍{user && user.likedQuotes && user.likedQuotes.includes(id) ? 1 : 0}
-            </button>
-            <button
-              disabled={user && user.dislikedQuotes && user.dislikedQuotes.includes(id)}
-              onClick={handleDislike}
-            >
-              👎 {user && user.dislikedQuotes && user.dislikedQuotes.includes(id) ? 1 : 0}
-            </button>
-          </div>
+          {user && user.id && (
+            <div>
+              <button
+                disabled={isLiked}
+                onClick={() => handleVote("like")}
+              >
+                👍 {likeCount}
+              </button>
+              <button
+                disabled={isDisliked}
+                onClick={() => handleVote("dislike")}
+              >
+                👎 {dislikeCount}
+              </button>
+            </div>
+          )}
         </div>
-        <button onClick={onNewQuoteClick}>New Quote</button>
+        {user && user.id && <button onClick={onNewQuoteClick}>New Quote</button>}
       </>
     );
   }
