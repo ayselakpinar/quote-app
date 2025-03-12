@@ -13,6 +13,8 @@ import {
     const [errorMessage, setErrorMessage] = useState("");
     const [likeCount, setLikeCount] = useState(0);
     const [dislikeCount, setDislikeCount] = useState(0);
+    const [totalLikeCount, setTotalLikeCount] = useState(0);
+    const [totalDislikeCount, setTotalDislikeCount] = useState(0);
   
     const collectionReference = collection(db, "quotes");
   
@@ -31,6 +33,8 @@ import {
   
           setLikeCount(currentQuoteDocument.likedBy ? currentQuoteDocument.likedBy.length : 0);
           setDislikeCount(currentQuoteDocument.dislikedBy ? currentQuoteDocument.dislikedBy.length : 0);
+          setTotalLikeCount(currentQuoteDocument.likedBy ? currentQuoteDocument.likedBy.length : 0);
+          setTotalDislikeCount(currentQuoteDocument.dislikedBy ? currentQuoteDocument.dislikedBy.length : 0);
         }
       }
   
@@ -99,6 +103,10 @@ import {
         <div>
           <p>{quote}</p>
           <span>{author}</span>
+          <div>
+            <p>Total Like: {totalLikeCount}</p>
+            <p>Total Dislike: {totalDislikeCount}</p>
+          </div>
           {user && user.id && (
             <div>
               <button

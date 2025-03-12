@@ -92,8 +92,6 @@ function App() {
           <Register setCurrentPage={setCurrentPage} />
         )}
       </div>
-      {/* Only add this button temporary on the main page to upload all quotes. Remove it after to avoid adding the quotes again.  */}
-      <button onClick={uploadQuotesScript}>upload quotes</button>
     </>
   );
 }
