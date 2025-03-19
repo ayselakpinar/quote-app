@@ -12,6 +12,8 @@ import {
 } from "./UserContext.jsx";
 import "./App.css";
 import { uploadQuotesScript } from "./uploadQuotesScript.js";
+import { NewQuotePage } from "./components/NewQuote/index.jsx";
+
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
@@ -67,6 +69,12 @@ function App() {
               <button onClick={handleLogout} className="nav-btn">
                 Logout
               </button>
+              <button
+                onClick={() => setCurrentPage("new-quote")}
+                className="nav-btn"
+              >
+                New Quote
+              </button>
             </>
           ) : (
             <>
@@ -87,6 +95,7 @@ function App() {
         </nav>
         {currentPage === "home" && <Home />}
         {currentPage === "user" && <UserPage />}
+        {currentPage === "new-quote" && <NewQuotePage />}
         {currentPage === "login" && <Login setCurrentPage={setCurrentPage} />}
         {currentPage === "register" && (
           <Register setCurrentPage={setCurrentPage} />
