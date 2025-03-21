@@ -5,18 +5,31 @@ export const auth = getAuth(app);
 
 export const register = async (email, password) => {
   try {
-    await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    return {
+      email: user.email,
+      name: user.displayName,
+      id: user.uid,
+    };
   } catch (error) {
-    throw Error("Error registering:", error);
-
+    console.error("Register error:", error);
+    throw error;
   }
 };
 
 export const login = async (email, password) => {
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    return {
+      email: user.email,
+      name: user.displayName,
+      id: user.uid,
+    };
   } catch (error) {
-    throw Error("Error logging in:", error);
+    console.error("Login error:", error);
+    throw error;
   }
 };
 
@@ -24,6 +37,7 @@ export const logout = async () => {
   try {
     await signOut(auth);
   } catch (error) {
-    throw Error("Error logging out:", error);
+    console.error("Logout error:", error);
+    throw error;
   }
 };

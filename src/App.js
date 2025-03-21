@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { logout, auth } from "./firebase/auth.js";
 import { UserPage } from "./components/UserPage/index.jsx";
@@ -13,12 +14,13 @@ import {
 import "./App.css";
 import { uploadQuotesScript } from "./uploadQuotesScript.js";
 import { NewQuotePage } from "./components/NewQuote/index.jsx";
+import { LikedQuotes } from "./components/LikedQuotes/index.jsx";
+import { UserSettings } from "./components/UserSettings/index.jsx";
 
-
-function App() {
-  const [currentPage, setCurrentPage] = useState("home");
+function AppContent() {
   const user = useContext(UserContext);
   const dispatch = useContext(UserDispatchContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -43,7 +45,7 @@ function App() {
   async function handleLogout() {
     try {
       await logout();
-      setCurrentPage("home");
+      navigate("/");
     } catch (error) {
       console.error("Error logging out:", error);
       alert("Error logging out. Please try again.");
@@ -51,57 +53,55 @@ function App() {
   }
 
   return (
-    <>
-      <div className="App">
-        <nav className="nav--top">
-          <button onClick={() => setCurrentPage("home")} className="nav-btn">
-            Home
-          </button>
+    <div className="App">
+      <nav className="nav--top">
+        <button onClick={() => navigate("/")} className="nav-btn">
+          Home
+        </button>
 
-          {user && user.user ? (
-            <>
-              <button
-                onClick={() => setCurrentPage("user")}
-                className="nav-btn"
-              >
-                User
-              </button>
-              <button onClick={handleLogout} className="nav-btn">
-                Logout
-              </button>
-              <button
-                onClick={() => setCurrentPage("new-quote")}
-                className="nav-btn"
-              >
-                New Quote
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => setCurrentPage("login")}
-                className="nav-btn"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => setCurrentPage("register")}
-                className="nav-btn"
-              >
-                Register
-              </button>
-            </>
-          )}
-        </nav>
-        {currentPage === "home" && <Home />}
-        {currentPage === "user" && <UserPage />}
-        {currentPage === "new-quote" && <NewQuotePage />}
-        {currentPage === "login" && <Login setCurrentPage={setCurrentPage} />}
-        {currentPage === "register" && (
-          <Register setCurrentPage={setCurrentPage} />
+        {user && user.user ? (
+          <>
+            <button onClick={handleLogout} className="nav-btn">
+              Logout
+            </button>
+            <button onClick={() => navigate("/new-quote")} className="nav-btn">
+              New Quote
+            </button>
+            <button onClick={() => navigate("/user/quotes")} className="nav-btn">
+              Liked Quotes
+            </button>
+            <button onClick={() => navigate("/user/settings")} className="nav-btn">
+              Settings
+            </button>
+          </>
+        ) : (
+          <>
+            <button onClick={() => navigate("/login")} className="nav-btn">
+              Login
+            </button>
+            <button onClick={() => navigate("/register")} className="nav-btn">
+              Register
+            </button>
+          </>
         )}
-      </div>
-    </>
+      </nav>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/user/quotes" element={<LikedQuotes />} />
+        <Route path="/user/settings" element={<UserSettings />} />
+        <Route path="/new-quote" element={<NewQuotePage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
 

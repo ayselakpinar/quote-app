@@ -1,20 +1,16 @@
-import {
-    UserContext,
-    UserDispatchContext,
-    UserActionTypes,
-  } from "../../UserContext";
+import { UserContext,} from "../../UserContext";
   import { useContext, useState, useEffect } from "react";
-  import { doc, setDoc, query, collection, where, getDocs } from "firebase/firestore";
+  import { doc, setDoc, query, collection, where, getDocs, updateDoc  } from "firebase/firestore";
   import { db } from "../../firebase/config";
   
   export function QuoteBox({ id, quote, author, onNewQuoteClick }) {
     const { user } = useContext(UserContext);
-    const dispatch = useContext(UserDispatchContext);
     const [errorMessage, setErrorMessage] = useState("");
     const [likeCount, setLikeCount] = useState(0);
     const [dislikeCount, setDislikeCount] = useState(0);
-    const [totalLikeCount, setTotalLikeCount] = useState(0);
+    const [totalLikeCount, setTotalLikeCount] = useState(0); 
     const [totalDislikeCount, setTotalDislikeCount] = useState(0);
+  
   
     const collectionReference = collection(db, "quotes");
   
@@ -33,8 +29,9 @@ import {
   
           setLikeCount(currentQuoteDocument.likedBy ? currentQuoteDocument.likedBy.length : 0);
           setDislikeCount(currentQuoteDocument.dislikedBy ? currentQuoteDocument.dislikedBy.length : 0);
-          setTotalLikeCount(currentQuoteDocument.likedBy ? currentQuoteDocument.likedBy.length : 0);
+          setTotalLikeCount(currentQuoteDocument.likedBy ? currentQuoteDocument.likedBy.length : 0); 
           setTotalDislikeCount(currentQuoteDocument.dislikedBy ? currentQuoteDocument.dislikedBy.length : 0);
+      
         }
       }
   
@@ -60,39 +57,31 @@ import {
         const docSnapshot = querySnapshots.docs[0];
         const currentQuoteDocument = docSnapshot.data();
         const userHasVoted = currentQuoteDocument[field]?.includes(user.id);
+        if (userHasVoted) return;
   
-        if (userHasVoted) {
-          const message = `You already ${actionType}d this quote!`;
-          setErrorMessage(message);
-          console.log(message);
-          return;
-        }
-  
-        dispatch({
-          type: actionType === "like" ? UserActionTypes.UpdateLikedQuotes : UserActionTypes.UpdateDislikedQuotes,
-          payload: { id }
-        });
   
         const quoteDocRef = doc(db, "quotes", docSnapshot.id);
-        const updatedVotes = new Set(
-          Array.isArray(currentQuoteDocument[field]) ? currentQuoteDocument[field] : []
-        );
-        updatedVotes.add(user.id);
-  
-        const updatedData = { ...currentQuoteDocument, [field]: Array.from(updatedVotes) };
-  
-        Object.keys(updatedData).forEach(
-          key => updatedData[key] === undefined && delete updatedData[key]
-        );
-  
-        await setDoc(quoteDocRef, updatedData);
-        stateSetter(updatedVotes.size);
-      } catch (error) {
-        const message = `Error updating ${actionType}: ${error.message}`;
-        setErrorMessage(message);
-        console.error(message);
-      }
+    const updatedVotes = new Set(currentQuoteDocument[field] || []);
+    updatedVotes.add(user.id);
+
+    await updateDoc(quoteDocRef, { [field]: Array.from(updatedVotes) }); 
+
+    stateSetter(updatedVotes.size);
+
+    if (actionType === "like") {
+      await setDoc(doc(db, "likedQuotes", `${user.id}_${id}`), {
+        userId: user.id,
+        quoteId: id,
+        text: quote,
+        author,
+        category: currentQuoteDocument.category || "general",
+        createdAt: new Date(),
+      });
     }
+  } catch (error) {
+    setErrorMessage(`Error: ${error.message}`);
+  }
+};
   
     const isLiked = user?.likedQuotes?.includes(id);
     const isDisliked = user?.dislikedQuotes?.includes(id);

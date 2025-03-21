@@ -1,64 +1,121 @@
-import { db } from "../../firebase/config.js"; 
+import React, { useContext, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { collection, addDoc } from "firebase/firestore";
-import { useState } from "react";
+import { db } from "../../firebase/config";
+import { UserContext } from "../../UserContext";
 
-export default function QuoteForm() {
-  const [quote, setQuote] = useState("");
-  const [category, setCategory] = useState("inspirational");
-  const [message, setMessage] = useState("");
+const QuoteForm = () => {
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm({
+    defaultValues: {
+      quote: "",
+      author: "",
+      category: "general"
+    }
+  });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!quote.trim()) {
-      setMessage("Quote cannot be empty!");
+  const onSubmit = async (data) => {
+    if (!user || !user.id) {
+      setError("You must be logged in to add a quote");
       return;
     }
 
     try {
-      await addDoc(collection(db, "quotes"), {
-        text: quote,
-        category: category,
-        createdAt: new Date(),
-      });
+      setIsSubmitting(true);
+      setError(null);
 
-      setMessage("Quote added successfully!");
-      setQuote(""); 
-      setCategory("inspirational");
-    } catch (error) {
-      console.error("Error adding quote: ", error);
-      setMessage("Error saving quote!");
+      const quoteData = {
+        text: data.quote.trim(),
+        author: data.author.trim(),
+        category: data.category,
+        createdAt: new Date(),
+        createdBy: user.id,
+        likedBy: [],
+        dislikedBy: []
+      };
+
+      await addDoc(collection(db, "quotes"), quoteData);
+      reset();
+      navigate("/");
+    } catch (err) {
+      console.error("Error adding quote:", err);
+      setError("Failed to add quote. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  if (!user) {
+    return <div className="message">Please log in to add new quotes.</div>;
+  }
+
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={quote}
-        onChange={(e) => setQuote(e.target.value)}
-        placeholder="Enter your quote"
-        style={{ fontSize: "18px", padding: "10px", width: "100%" }}
-      />
+    <form onSubmit={handleSubmit(onSubmit)} className="quote-form">
+      <div className="form-group">
+        <textarea
+          {...register("quote", {
+            required: "Quote text is required",
+            minLength: {
+              value: 3,
+              message: "Quote must be at least 3 characters long"
+            },
+            maxLength: {
+              value: 500,
+              message: "Quote cannot exceed 500 characters"
+            }
+          })}
+          placeholder="Enter your quote"
+        />
+        {errors.quote && <span className="error">{errors.quote.message}</span>}
+      </div>
 
-      <select
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        style={{ fontSize: "18px", padding: "10px", width: "100%", marginTop: "10px" }}
+      <div className="form-group">
+        <input
+          type="text"
+          {...register("author", {
+            required: "Author name is required",
+            minLength: {
+              value: 2,
+              message: "Author name must be at least 2 characters long"
+            }
+          })}
+          placeholder="Enter author name"
+        />
+        {errors.author && <span className="error">{errors.author.message}</span>}
+      </div>
+
+      <div className="form-group">
+        <select {...register("category")}>
+          <option value="general">General</option>
+          <option value="motivation">Motivation</option>
+          <option value="wisdom">Wisdom</option>
+          <option value="success">Success</option>
+          <option value="life">Life</option>
+        </select>
+      </div>
+
+      {error && <div className="error-message">{error}</div>}
+      
+      <button 
+        type="submit" 
+        className="submit-button" 
+        disabled={isSubmitting}
       >
-        <option value="inspirational">Inspirational</option>
-        <option value="funny">Funny</option>
-        <option value="life">Life</option>
-        <option value="love">Love</option>
-        <option value="wisdom">Wisdom</option>
-      </select>
-
-      <button type="submit" style={{ fontSize: "18px", padding: "10px", marginTop: "10px" }}>
-        Save Quote
+        {isSubmitting ? "Adding Quote..." : "Add Quote"}
       </button>
-
-      {message && <p>{message}</p>}
     </form>
   );
-}
+};
+
+export default QuoteForm;
 
