@@ -61,8 +61,8 @@ function AppContent() {
 
         {user && user.user ? (
           <>
-            <button onClick={handleLogout} className="nav-btn">
-              Logout
+            <button onClick={() => navigate("/user")} className="nav-btn">
+              My Account
             </button>
             <button onClick={() => navigate("/new-quote")} className="nav-btn">
               New Quote
@@ -72,6 +72,9 @@ function AppContent() {
             </button>
             <button onClick={() => navigate("/user/settings")} className="nav-btn">
               Settings
+            </button>
+            <button onClick={handleLogout} className="nav-btn">
+              Logout
             </button>
           </>
         ) : (
@@ -87,6 +90,7 @@ function AppContent() {
       </nav>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/user" element={<UserPage />} />
         <Route path="/user/quotes" element={<LikedQuotes />} />
         <Route path="/user/settings" element={<UserSettings />} />
         <Route path="/new-quote" element={<NewQuotePage />} />

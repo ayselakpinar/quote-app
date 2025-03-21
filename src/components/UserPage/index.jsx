@@ -2,71 +2,44 @@ import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../UserContext";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/config";
-import { Title } from "../Title";
-import { QuoteBox } from "../QuoteBox";
+import { useNavigate } from "react-router-dom";
+
 
 export const UserPage = () => {
   const { user } = useContext(UserContext);
-  const [likedQuotes, setLikedQuotes] = useState([]);
+  const [likedCount, setLikedCount] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchLikedQuotes = async () => {
-      if (!user || !user.id) return;
-
+    if (!user) {
+      navigate("/login"); 
+      return;
+    }
+    const fetchLikedCount = async () => {
       try {
-        setLoading(true);
-        const likedQuotesRef = collection(db, "likedQuotes");
-        const q = query(likedQuotesRef, where("userId", "==", user.id));
+        const q = query(collection(db, "likedQuotes"), where("userId", "==", user.id));
         const querySnapshot = await getDocs(q);
-        
-        const quotes = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-
-        setLikedQuotes(quotes);
+        setLikedCount(querySnapshot.size);
       } catch (err) {
-        console.error("Error fetching liked quotes:", err);
-        setError("Error loading liked quotes. Please try again.");
-      } finally {
-        setLoading(false);
-      }
+        console.error("Error fetching liked count:", err);} 
+        finally {
+          setLoading(false); 
+        }
     };
 
-    fetchLikedQuotes();
-  }, [user]);
-
-  if (!user) {
-    return <div>Please log in to continue.</div>;
-  }
-
+    fetchLikedCount();
+  }, [user , navigate]);
   if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
+    return <div>Loading...</div>; 
   }
 
   return (
-    <div>
-      <Title>Your Liked Quotes</Title>
-      {likedQuotes.length === 0 ? (
-        <p>You haven't liked any quotes yet.</p>
-      ) : (
-        <div>
-          {likedQuotes.map((quote) => (
-            <QuoteBox
-              key={quote.id}
-              id={quote.quoteId}
-              quote={quote.text}
-              author={quote.author}
-            />
-          ))}
-        </div>
-      )}
+    <div className="user-page-container">
+      <h2>Welcome, {user?.name || "User"}!</h2>
+      <p>Email: {user?.email}</p>
+      <p>You have liked {likedCount} quotes.</p>
+      <button onClick={() => navigate("/user/quotes")}>View Liked Quotes</button>
     </div>
   );
 };
