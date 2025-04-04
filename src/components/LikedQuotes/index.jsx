@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { UserContext } from '../../UserContext';
-import './styles.css';
+import '../LikedQuotes/styles.css';
 
 export function LikedQuotes() {
   const [likedQuotes, setLikedQuotes] = useState([]);

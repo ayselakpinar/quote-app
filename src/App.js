@@ -12,7 +12,6 @@ import {
   UserActionTypes,
 } from "./UserContext.jsx";
 import "./App.css";
-import { uploadQuotesScript } from "./uploadQuotesScript.js";
 import { NewQuotePage } from "./components/NewQuote/index.jsx";
 import { LikedQuotes } from "./components/LikedQuotes/index.jsx";
 import { UserSettings } from "./components/UserSettings/index.jsx";
