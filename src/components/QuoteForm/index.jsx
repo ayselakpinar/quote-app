@@ -42,18 +42,23 @@ export function QuoteForm() {
 
   if (!user || !user.id) {
     return (
-      <div className="quote-form">
-        <div className="error-message">Please login to add quotes</div>
+      <div className="text-center text-red-500 p-4">
+        <div className="text-lg">Please login to add quotes</div>
       </div>
     );
   }
 
   return (
-    <form className="quote-form" onSubmit={handleSubmit(onSubmit)}>
-      <div className="form-group">
+    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <div>
+        <label htmlFor="quote" className="block text-primary-dark font-medium mb-2">
+          Quote
+        </label>
         <input
+          id="quote"
           type="text"
           placeholder="Enter your quote"
+          className="w-full px-4 py-2 border border-secondary rounded-lg focus:outline-none focus:border-primary"
           {...register('quote', {
             required: 'Quote is required',
             minLength: {
@@ -67,14 +72,19 @@ export function QuoteForm() {
           })}
         />
         {errors.quote && (
-          <div className="error-message">{errors.quote.message}</div>
+          <div className="mt-1 text-red-500 text-sm">{errors.quote.message}</div>
         )}
       </div>
 
-      <div className="form-group">
+      <div>
+        <label htmlFor="author" className="block text-primary-dark font-medium mb-2">
+          Author
+        </label>
         <input
+          id="author"
           type="text"
           placeholder="Author name"
+          className="w-full px-4 py-2 border border-secondary rounded-lg focus:outline-none focus:border-primary"
           {...register('author', {
             required: 'Author name is required',
             minLength: {
@@ -88,12 +98,19 @@ export function QuoteForm() {
           })}
         />
         {errors.author && (
-          <div className="error-message">{errors.author.message}</div>
+          <div className="mt-1 text-red-500 text-sm">{errors.author.message}</div>
         )}
       </div>
 
-      <div className="form-group">
-        <select {...register('category')}>
+      <div>
+        <label htmlFor="category" className="block text-primary-dark font-medium mb-2">
+          Category
+        </label>
+        <select 
+          id="category"
+          className="w-full px-4 py-2 border border-secondary rounded-lg focus:outline-none focus:border-primary"
+          {...register('category')}
+        >
           <option value="general">General</option>
           <option value="motivation">Motivation</option>
           <option value="wisdom">Wisdom</option>
@@ -104,7 +121,10 @@ export function QuoteForm() {
         </select>
       </div>
 
-      <button type="submit" className="submit-button">
+      <button 
+        type="submit" 
+        className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-lg transition duration-300"
+      >
         Add Quote
       </button>
     </form>

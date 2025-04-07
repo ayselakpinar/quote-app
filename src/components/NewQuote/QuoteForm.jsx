@@ -56,13 +56,18 @@ const QuoteForm = () => {
   };
 
   if (!user) {
-    return <div className="message">Please log in to add new quotes.</div>;
+    return <div className="text-center text-red-500 p-4">Please log in to add new quotes.</div>;
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="quote-form">
-      <div className="form-group">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div>
+        <label htmlFor="quote" className="block text-primary-dark font-medium mb-2">
+          Quote Text
+        </label>
         <textarea
+          id="quote"
+          rows="4"
           {...register("quote", {
             required: "Quote text is required",
             minLength: {
@@ -75,12 +80,17 @@ const QuoteForm = () => {
             }
           })}
           placeholder="Enter your quote"
+          className="w-full px-4 py-2 border border-secondary rounded-lg focus:outline-none focus:border-primary"
         />
-        {errors.quote && <span className="error">{errors.quote.message}</span>}
+        {errors.quote && <span className="mt-1 text-red-500 text-sm">{errors.quote.message}</span>}
       </div>
 
-      <div className="form-group">
+      <div>
+        <label htmlFor="author" className="block text-primary-dark font-medium mb-2">
+          Author
+        </label>
         <input
+          id="author"
           type="text"
           {...register("author", {
             required: "Author name is required",
@@ -90,12 +100,20 @@ const QuoteForm = () => {
             }
           })}
           placeholder="Enter author name"
+          className="w-full px-4 py-2 border border-secondary rounded-lg focus:outline-none focus:border-primary"
         />
-        {errors.author && <span className="error">{errors.author.message}</span>}
+        {errors.author && <span className="mt-1 text-red-500 text-sm">{errors.author.message}</span>}
       </div>
 
-      <div className="form-group">
-        <select {...register("category")}>
+      <div>
+        <label htmlFor="category" className="block text-primary-dark font-medium mb-2">
+          Category
+        </label>
+        <select 
+          id="category"
+          {...register("category")}
+          className="w-full px-4 py-2 border border-secondary rounded-lg focus:outline-none focus:border-primary"
+        >
           <option value="general">General</option>
           <option value="motivation">Motivation</option>
           <option value="wisdom">Wisdom</option>
@@ -104,11 +122,11 @@ const QuoteForm = () => {
         </select>
       </div>
 
-      {error && <div className="error-message">{error}</div>}
+      {error && <div className="text-red-500 text-center p-2">{error}</div>}
       
       <button 
         type="submit" 
-        className="submit-button" 
+        className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-lg transition duration-300 disabled:opacity-50"
         disabled={isSubmitting}
       >
         {isSubmitting ? "Adding Quote..." : "Add Quote"}

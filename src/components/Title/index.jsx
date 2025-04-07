@@ -1,5 +1,9 @@
-import './styles.css';
+import React from 'react';
 
-export const Title = ({ children }) => {
-  return <h1 className='title'>{children}</h1>;
-};
+export function Title({ children }) {
+  return (
+    <h1 className="text-4xl font-bold text-primary-dark mb-8 text-center">
+      {children}
+    </h1>
+  );
+}

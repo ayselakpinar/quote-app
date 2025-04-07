@@ -29,17 +29,19 @@ export const Home = () => {
     setQuoteIndex(getRandomQuoteIndex());
   }
 
-  if (quotes.length === 0) return <p>Loading...</p>;
+  if (quotes.length === 0) return <p className="text-center text-xl text-gray-600 mt-8">Loading...</p>;
 
   return (
-    <>
-      <Title>Random Quotes</Title>
-      <QuoteBox
-        id={quotes[quoteIndex].id}
-        quote={quotes[quoteIndex].quote}
-        author={quotes[quoteIndex].author}
-        onNewQuoteClick={handleNewQuoteClick}
-      />
-    </>
+    <div className="min-h-screen bg-background p-8">
+      <div className="max-w-4xl mx-auto">
+        <Title>Random Quotes</Title>
+        <QuoteBox
+          id={quotes[quoteIndex].id}
+          quote={quotes[quoteIndex].quote}
+          author={quotes[quoteIndex].author}
+          onNewQuoteClick={handleNewQuoteClick}
+        />
+      </div>
+    </div>
   );
 };

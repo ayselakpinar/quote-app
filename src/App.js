@@ -11,7 +11,6 @@ import {
   UserDispatchContext,
   UserActionTypes,
 } from "./UserContext.jsx";
-import "./App.css";
 import { NewQuotePage } from "./components/NewQuote/index.jsx";
 import { LikedQuotes } from "./components/LikedQuotes/index.jsx";
 import { UserSettings } from "./components/UserSettings/index.jsx";
@@ -52,50 +51,87 @@ function AppContent() {
   }
 
   return (
-    <div className="App">
-      <nav className="nav--top">
-        <button onClick={() => navigate("/")} className="nav-btn">
-          Home
-        </button>
-
-        {user && user.user ? (
-          <>
-            <button onClick={() => navigate("/user")} className="nav-btn">
-              My Account
-            </button>
-            <button onClick={() => navigate("/new-quote")} className="nav-btn">
-              New Quote
-            </button>
-            <button onClick={() => navigate("/user/quotes")} className="nav-btn">
-              Liked Quotes
-            </button>
-            <button onClick={() => navigate("/user/settings")} className="nav-btn">
-              Settings
-            </button>
-            <button onClick={handleLogout} className="nav-btn">
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <button onClick={() => navigate("/login")} className="nav-btn">
-              Login
-            </button>
-            <button onClick={() => navigate("/register")} className="nav-btn">
-              Register
-            </button>
-          </>
-        )}
+    <div className="min-h-screen bg-background">
+      <nav className="bg-white shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex">
+              <div className="flex-shrink-0 flex items-center">
+                <button 
+                  onClick={() => navigate("/")} 
+                  className="text-2xl font-bold text-primary hover:text-primary-dark transition duration-300"
+                >
+                  Quotes
+                </button>
+              </div>
+            </div>
+            
+            <div className="flex items-center">
+              {user && user.user ? (
+                <div className="flex space-x-2">
+                  <button 
+                    onClick={() => navigate("/user")} 
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-100 transition duration-300"
+                  >
+                    My Account
+                  </button>
+                  <button 
+                    onClick={() => navigate("/new-quote")} 
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-100 transition duration-300"
+                  >
+                    New Quote
+                  </button>
+                  <button 
+                    onClick={() => navigate("/user/quotes")} 
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-100 transition duration-300"
+                  >
+                    Liked Quotes
+                  </button>
+                  <button 
+                    onClick={() => navigate("/user/settings")} 
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-100 transition duration-300"
+                  >
+                    Settings
+                  </button>
+                  <button 
+                    onClick={handleLogout} 
+                    className="ml-2 px-3 py-2 rounded-md text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition duration-300"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="flex space-x-2">
+                  <button 
+                    onClick={() => navigate("/login")} 
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-100 transition duration-300"
+                  >
+                    Login
+                  </button>
+                  <button 
+                    onClick={() => navigate("/register")} 
+                    className="ml-2 px-3 py-2 rounded-md text-sm font-medium text-white bg-primary hover:bg-primary-dark transition duration-300"
+                  >
+                    Register
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </nav>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/user" element={<UserPage />} />
-        <Route path="/user/quotes" element={<LikedQuotes />} />
-        <Route path="/user/settings" element={<UserSettings />} />
-        <Route path="/new-quote" element={<NewQuotePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
+      
+      <main className="pt-4">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/user" element={<UserPage />} />
+          <Route path="/user/quotes" element={<LikedQuotes />} />
+          <Route path="/user/settings" element={<UserSettings />} />
+          <Route path="/new-quote" element={<NewQuotePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </main>
     </div>
   );
 }

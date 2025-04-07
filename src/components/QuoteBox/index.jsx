@@ -87,33 +87,50 @@ import { UserContext,} from "../../UserContext";
     const isDisliked = user?.dislikedQuotes?.includes(id);
   
     return (
-      <>
-        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-        <div>
-          <p>{quote}</p>
-          <span>{author}</span>
-          <div>
-            <p>Total Like: {totalLikeCount}</p>
-            <p>Total Dislike: {totalDislikeCount}</p>
-          </div>
-          {user && user.id && (
-            <div>
-              <button
-                disabled={isLiked}
-                onClick={() => handleVote("like")}
-              >
-                👍 {likeCount}
-              </button>
-              <button
-                disabled={isDisliked}
-                onClick={() => handleVote("dislike")}
-              >
-                👎 {dislikeCount}
-              </button>
+      <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
+        {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
+        <div className="space-y-4">
+          <p className="text-xl text-gray-800 italic">"{quote}"</p>
+          <p className="text-gray-600">- {author}</p>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">👍 {totalLikeCount}</span>
+              <span className="text-sm text-gray-500">👎 {totalDislikeCount}</span>
             </div>
-          )}
+            {user && user.id && (
+              <div className="flex space-x-2">
+                <button
+                  disabled={isLiked}
+                  onClick={() => handleVote("like")}
+                  className={`px-4 py-2 rounded-lg transition duration-300 ${
+                    isLiked 
+                      ? 'bg-green-500 text-white' 
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  👍 {likeCount}
+                </button>
+                <button
+                  disabled={isDisliked}
+                  onClick={() => handleVote("dislike")}
+                  className={`px-4 py-2 rounded-lg transition duration-300 ${
+                    isDisliked 
+                      ? 'bg-red-500 text-white' 
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  👎 {dislikeCount}
+                </button>
+              </div>
+            )}
+            <button 
+              onClick={onNewQuoteClick}
+              className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg transition duration-300"
+            >
+              New Quote
+            </button>
+          </div>
         </div>
-        {user && user.id && <button onClick={onNewQuoteClick}>New Quote</button>}
-      </>
+      </div>
     );
   }
