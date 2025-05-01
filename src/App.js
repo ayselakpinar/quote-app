@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { logout, auth } from "./firebase/auth.js";

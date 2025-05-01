@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { UserContext } from '../../UserContext';
 import './styles.css';

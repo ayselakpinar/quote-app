@@ -36,7 +36,7 @@ import { UserContext,} from "../../UserContext";
       }
   
       fetchQuoteData();
-    }, [id, user]);
+    }, [id, user, collectionReference]);
   
     async function handleVote(actionType) {
       if (!user || !user.id) {
