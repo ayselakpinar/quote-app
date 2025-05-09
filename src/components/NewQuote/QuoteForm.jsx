@@ -4,24 +4,26 @@ import { useNavigate } from "react-router-dom";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { UserContext } from "../../UserContext";
+import { Label } from "../Shared/Label";
+import { Input } from "../Shared/Input";
 
 const QuoteForm = () => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm({
     defaultValues: {
       quote: "",
       author: "",
-      category: "general"
-    }
+      category: "general",
+    },
   });
 
   const onSubmit = async (data) => {
@@ -41,7 +43,7 @@ const QuoteForm = () => {
         createdAt: new Date(),
         createdBy: user.id,
         likedBy: [],
-        dislikedBy: []
+        dislikedBy: [],
       };
 
       await addDoc(collection(db, "quotes"), quoteData);
@@ -56,15 +58,17 @@ const QuoteForm = () => {
   };
 
   if (!user) {
-    return <div className="text-center text-red-500 p-4">Please log in to add new quotes.</div>;
+    return (
+      <div className="text-center text-red-500 p-4">
+        Please log in to add new quotes.
+      </div>
+    );
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
-        <label htmlFor="quote" className="block text-primary-dark font-medium mb-2">
-          Quote Text
-        </label>
+        <Label htmlFor="quote">Quote Text</Label>
         <textarea
           id="quote"
           rows="4"
@@ -72,44 +76,47 @@ const QuoteForm = () => {
             required: "Quote text is required",
             minLength: {
               value: 3,
-              message: "Quote must be at least 3 characters long"
+              message: "Quote must be at least 3 characters long",
             },
             maxLength: {
               value: 500,
-              message: "Quote cannot exceed 500 characters"
-            }
+              message: "Quote cannot exceed 500 characters",
+            },
           })}
           placeholder="Enter your quote"
           className="w-full px-4 py-2 border border-secondary rounded-lg focus:outline-none focus:border-primary"
         />
-        {errors.quote && <span className="mt-1 text-red-500 text-sm">{errors.quote.message}</span>}
+        {errors.quote && (
+          <span className="mt-1 text-red-500 text-sm">
+            {errors.quote.message}
+          </span>
+        )}
       </div>
 
       <div>
-        <label htmlFor="author" className="block text-primary-dark font-medium mb-2">
-          Author
-        </label>
-        <input
+        <Label htmlFor="author">Author</Label>
+        <Input
           id="author"
           type="text"
           {...register("author", {
             required: "Author name is required",
             minLength: {
               value: 2,
-              message: "Author name must be at least 2 characters long"
-            }
+              message: "Author name must be at least 2 characters long",
+            },
           })}
           placeholder="Enter author name"
-          className="w-full px-4 py-2 border border-secondary rounded-lg focus:outline-none focus:border-primary"
         />
-        {errors.author && <span className="mt-1 text-red-500 text-sm">{errors.author.message}</span>}
+        {errors.author && (
+          <span className="mt-1 text-red-500 text-sm">
+            {errors.author.message}
+          </span>
+        )}
       </div>
 
       <div>
-        <label htmlFor="category" className="block text-primary-dark font-medium mb-2">
-          Category
-        </label>
-        <select 
+        <Label htmlFor="category">Category</Label>
+        <select
           id="category"
           {...register("category")}
           className="w-full px-4 py-2 border border-secondary rounded-lg focus:outline-none focus:border-primary"
@@ -123,9 +130,9 @@ const QuoteForm = () => {
       </div>
 
       {error && <div className="text-red-500 text-center p-2">{error}</div>}
-      
-      <button 
-        type="submit" 
+
+      <button
+        type="submit"
         className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-lg transition duration-300 disabled:opacity-50"
         disabled={isSubmitting}
       >
@@ -136,4 +143,3 @@ const QuoteForm = () => {
 };
 
 export default QuoteForm;
-

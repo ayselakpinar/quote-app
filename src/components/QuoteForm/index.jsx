@@ -1,42 +1,47 @@
-import React, { useContext } from 'react';
-import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { addDoc, collection } from 'firebase/firestore';
-import { db } from '../../firebase/config';
-import { UserContext } from '../../UserContext';
+import React, { useContext } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../../firebase/config";
+import { UserContext } from "../../UserContext";
 
 export function QuoteForm() {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
     defaultValues: {
-      quote: '',
-      author: '',
-      category: 'general'
-    }
+      quote: "",
+      author: "",
+      category: "general",
+    },
   });
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
 
   const onSubmit = async (data) => {
     if (!user || !user.id) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
 
     try {
-      await addDoc(collection(db, 'quotes'), {
+      await addDoc(collection(db, "quotes"), {
         text: data.quote.trim(),
         author: data.author.trim(),
         category: data.category,
         createdAt: new Date(),
         createdBy: user.id,
         likedBy: [],
-        dislikedBy: []
+        dislikedBy: [],
       });
 
       reset();
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Error adding quote:', error);
+      console.error("Error adding quote:", error);
     }
   };
 
@@ -51,65 +56,61 @@ export function QuoteForm() {
   return (
     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <label htmlFor="quote" className="block text-primary-dark font-medium mb-2">
-          Quote
-        </label>
-        <input
+        <Label htmlFor="quote">Quote</Label>
+        <Input
           id="quote"
           type="text"
           placeholder="Enter your quote"
-          className="w-full px-4 py-2 border border-secondary rounded-lg focus:outline-none focus:border-primary"
-          {...register('quote', {
-            required: 'Quote is required',
+          {...register("quote", {
+            required: "Quote is required",
             minLength: {
               value: 3,
-              message: 'Quote must be at least 3 characters'
+              message: "Quote must be at least 3 characters",
             },
             maxLength: {
               value: 500,
-              message: 'Quote must be less than 500 characters'
-            }
+              message: "Quote must be less than 500 characters",
+            },
           })}
         />
         {errors.quote && (
-          <div className="mt-1 text-red-500 text-sm">{errors.quote.message}</div>
+          <div className="mt-1 text-red-500 text-sm">
+            {errors.quote.message}
+          </div>
         )}
       </div>
 
       <div>
-        <label htmlFor="author" className="block text-primary-dark font-medium mb-2">
-          Author
-        </label>
-        <input
+        <Label htmlFor="author">Author</Label>
+        <Input
           id="author"
           type="text"
           placeholder="Author name"
-          className="w-full px-4 py-2 border border-secondary rounded-lg focus:outline-none focus:border-primary"
-          {...register('author', {
-            required: 'Author name is required',
+          {...register("author", {
+            required: "Author name is required",
             minLength: {
               value: 2,
-              message: 'Author name must be at least 2 characters'
+              message: "Author name must be at least 2 characters",
             },
             maxLength: {
               value: 100,
-              message: 'Author name must be less than 100 characters'
-            }
+              message: "Author name must be less than 100 characters",
+            },
           })}
         />
         {errors.author && (
-          <div className="mt-1 text-red-500 text-sm">{errors.author.message}</div>
+          <div className="mt-1 text-red-500 text-sm">
+            {errors.author.message}
+          </div>
         )}
       </div>
 
       <div>
-        <label htmlFor="category" className="block text-primary-dark font-medium mb-2">
-          Category
-        </label>
-        <select 
+        <Label htmlFor="category">Category</Label>
+        <select
           id="category"
           className="w-full px-4 py-2 border border-secondary rounded-lg focus:outline-none focus:border-primary"
-          {...register('category')}
+          {...register("category")}
         >
           <option value="general">General</option>
           <option value="motivation">Motivation</option>
@@ -121,12 +122,12 @@ export function QuoteForm() {
         </select>
       </div>
 
-      <button 
-        type="submit" 
+      <button
+        type="submit"
         className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-lg transition duration-300"
       >
         Add Quote
       </button>
     </form>
   );
-} 
+}

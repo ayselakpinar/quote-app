@@ -1,11 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { logout, auth } from "./firebase/auth.js";
 import { UserPage } from "./components/UserPage/index.jsx";
 import { Home } from "./components/Home/index.jsx";
 import { Login } from "./components/Login/index.jsx";
 import { Register } from "./components/Register/index.jsx";
+import { NavButton } from "./components/Shared/NavButton.jsx";
 import {
   UserContext,
   UserDispatchContext,
@@ -57,70 +63,52 @@ function AppContent() {
           <div className="flex justify-between h-16">
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <button 
-                  onClick={() => navigate("/")} 
+                <button
+                  onClick={() => navigate("/")}
                   className="text-2xl font-bold text-primary hover:text-primary-dark transition duration-300"
                 >
                   Quotes
                 </button>
               </div>
             </div>
-            
+
             <div className="flex items-center">
               {user && user.user ? (
                 <div className="flex space-x-2">
-                  <button 
-                    onClick={() => navigate("/user")} 
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-100 transition duration-300"
-                  >
+                  <NavButton onClick={() => navigate("/user")}>
                     My Account
-                  </button>
-                  <button 
-                    onClick={() => navigate("/new-quote")} 
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-100 transition duration-300"
-                  >
+                  </NavButton>
+                  <NavButton onClick={() => navigate("/new-quote")}>
                     New Quote
-                  </button>
-                  <button 
-                    onClick={() => navigate("/user/quotes")} 
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-100 transition duration-300"
-                  >
+                  </NavButton>
+                  <NavButton onClick={() => navigate("/user/quotes")}>
                     Liked Quotes
-                  </button>
-                  <button 
-                    onClick={() => navigate("/user/settings")} 
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-100 transition duration-300"
-                  >
+                  </NavButton>
+                  <NavButton onClick={() => navigate("/user/settings")}>
                     Settings
-                  </button>
-                  <button 
-                    onClick={handleLogout} 
-                    className="ml-2 px-3 py-2 rounded-md text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition duration-300"
-                  >
+                  </NavButton>
+                  <NavButton onClick={handleLogout} variant="danger">
                     Logout
-                  </button>
+                  </NavButton>
                 </div>
               ) : (
                 <div className="flex space-x-2">
-                  <button 
-                    onClick={() => navigate("/login")} 
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-100 transition duration-300"
-                  >
+                  <NavButton onClick={() => navigate("/login")}>
                     Login
-                  </button>
-                  <button 
-                    onClick={() => navigate("/register")} 
-                    className="ml-2 px-3 py-2 rounded-md text-sm font-medium text-white bg-primary hover:bg-primary-dark transition duration-300"
+                  </NavButton>
+                  <NavButton
+                    onClick={() => navigate("/register")}
+                    variant="primary"
                   >
                     Register
-                  </button>
+                  </NavButton>
                 </div>
               )}
             </div>
           </div>
         </div>
       </nav>
-      
+
       <main className="pt-4">
         <Routes>
           <Route path="/" element={<Home />} />
