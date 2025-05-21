@@ -1,18 +1,28 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/config";
-import { UserContext } from "../../UserContext";
+import { useUserContext } from "../../UserContext";
 import { Loading } from "../Shared/Loading";
 import { CenteredContainer } from "../Shared/CenteredContainer";
 import { PageTitle } from "../Shared/PageTitle";
 
-export function LikedQuotes() {
-  const [likedQuotes, setLikedQuotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const { user } = useContext(UserContext);
+interface LikedQuote {
+  id: string;
+  text: string;
+  author: string;
+  category?: string;
+  userId: string;
+  quoteId: string;
+  createdAt: Date;
+}
+
+export function LikedQuotes(): React.ReactElement {
+  const [likedQuotes, setLikedQuotes] = useState<LikedQuote[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const { user } = useUserContext();
 
   useEffect(() => {
-    async function fetchLikedQuotes() {
+    async function fetchLikedQuotes(): Promise<void> {
       if (!user || !user.id) return;
 
       try {
@@ -25,7 +35,7 @@ export function LikedQuotes() {
         const quotes = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        }));
+        })) as LikedQuote[];
 
         setLikedQuotes(quotes);
       } catch (error) {

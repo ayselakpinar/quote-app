@@ -1,15 +1,33 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { doc, updateDoc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
-import { UserContext } from "../../UserContext";
+import { useUserContext } from "../../UserContext";
 import { Loading } from "../Shared/Loading";
 import { CenteredContainer } from "../Shared/CenteredContainer";
 import { PageTitle } from "../Shared/PageTitle";
 import { Label } from "../Shared/Label";
 import { Input } from "../Shared/Input";
 
-const CATEGORIES = [
+interface Category {
+  value: string;
+  label: string;
+}
+
+interface UserSettingsFormData {
+  username: string;
+  email: string;
+  favoriteCategories: string[];
+}
+
+interface UserData {
+  name: string;
+  email: string;
+  favoriteCategories: string[];
+  updatedAt: Date;
+}
+
+const CATEGORIES: Category[] = [
   { value: "general", label: "General" },
   { value: "motivation", label: "Motivation" },
   { value: "wisdom", label: "Wisdom" },
@@ -19,19 +37,21 @@ const CATEGORIES = [
   { value: "happiness", label: "Happiness" },
 ];
 
-export function UserSettings() {
-  const { user } = useContext(UserContext);
-  const [loading, setLoading] = useState(true);
-  const [saveStatus, setSaveStatus] = useState("");
+type SaveStatus = "" | "saving" | "saved" | "error";
+
+export const UserSettings: React.FC = (): React.ReactElement => {
+  const { user } = useUserContext();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("");
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm<UserSettingsFormData>();
 
   useEffect(() => {
-    async function fetchUserSettings() {
+    async function fetchUserSettings(): Promise<void> {
       if (!user?.id) {
         setLoading(false);
         return;
@@ -42,15 +62,16 @@ export function UserSettings() {
         const userDoc = await getDoc(userDocRef);
 
         if (userDoc.exists()) {
-          const data = userDoc.data();
+          const data = userDoc.data() as UserData;
           setValue("username", data.name || "");
           setValue("email", data.email || "");
           setValue("favoriteCategories", data.favoriteCategories || []);
         } else {
-          const defaultData = {
+          const defaultData: UserData = {
             name: user.name || "",
             email: user.email || "",
             favoriteCategories: [],
+            updatedAt: new Date(),
           };
           await setDoc(userDocRef, defaultData);
           setValue("username", defaultData.name);
@@ -67,7 +88,7 @@ export function UserSettings() {
     fetchUserSettings();
   }, [user, setValue]);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: UserSettingsFormData): Promise<void> => {
     if (!user?.id) {
       setSaveStatus("error");
       return;
@@ -77,7 +98,7 @@ export function UserSettings() {
       setSaveStatus("saving");
       const userDocRef = doc(db, "users", user.id);
 
-      const userData = {
+      const userData: UserData = {
         name: data.username,
         email: data.email,
         favoriteCategories: Array.isArray(data.favoriteCategories)
@@ -198,4 +219,4 @@ export function UserSettings() {
       </CenteredContainer>
     </div>
   );
-}
+};

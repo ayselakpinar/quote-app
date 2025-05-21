@@ -1,25 +1,31 @@
-import React, { useState, useContext } from "react";
+import React, { useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../firebase/auth";
-import { UserDispatchContext, UserActionTypes } from "../../UserContext";
+import { useUserDispatchContext, UserActionTypes } from "../../UserContext";
 import { CenteredContainer } from "../Shared/CenteredContainer";
 import { PageTitle } from "../Shared/PageTitle";
 import { Label } from "../Shared/Label";
 import { Input } from "../Shared/Input";
 
-export const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-  const dispatch = useContext(UserDispatchContext);
+interface UserData {
+  email: string | null;
+  name: string | null;
+  id: string;
+}
+
+export const Login: React.FC = (): React.ReactElement => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const dispatch = useUserDispatchContext();
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setError(null);
 
     try {
-      const userData = await login(email, password);
+      const userData = (await login(email, password)) as UserData;
       dispatch({
         type: UserActionTypes.SetUser,
         payload: userData,
@@ -42,7 +48,9 @@ export const Login = () => {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setEmail(e.target.value)
+              }
               placeholder="Email"
               required
             />
@@ -53,7 +61,9 @@ export const Login = () => {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setPassword(e.target.value)
+              }
               placeholder="Password"
               required
             />
