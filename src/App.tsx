@@ -1,60 +1,64 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { ReactElement } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   useNavigate,
 } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
-import { logout, auth } from "./firebase/auth.js";
-import { UserPage } from "./components/UserPage/index.jsx";
-import { Home } from "./components/Home/index.jsx";
-import { Login } from "./components/Login/index.jsx";
-import { Register } from "./components/Register/index.jsx";
-import { NavButton } from "./components/Shared/NavButton.jsx";
-import {
-  UserContext,
-  UserDispatchContext,
-  UserActionTypes,
-} from "./UserContext.jsx";
-import { NewQuotePage } from "./components/NewQuote/index.jsx";
-import { LikedQuotes } from "./components/LikedQuotes/index.jsx";
-import { UserSettings } from "./components/UserSettings/index.jsx";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "./firebase/auth";
+import { UserPage } from "./components/UserPage";
+import { Home } from "./components/Home";
+import { Login } from "./components/Login";
+import { Register } from "./components/Register";
+import { NavButton } from "./components/Shared/NavButton";
+import { UserProvider } from "./UserContext";
+import { NewQuotePage } from "./components/NewQuote";
+import { LikedQuotes } from "./components/LikedQuotes";
+import { UserSettings } from "./components/UserSettings";
+import { useUserContext } from "./UserContext";
 
-function AppContent() {
-  const user = useContext(UserContext);
-  const dispatch = useContext(UserDispatchContext);
+interface UserState {
+  user: {
+    id: string;
+    email: string | null;
+    name: string | null;
+  } | null;
+}
+
+const AppContent: React.FC = (): ReactElement => {
+  const { user, dispatch } = useUserContext();
   const navigate = useNavigate();
 
-  useEffect(() => {
+  React.useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        const { email, displayName, uid } = user;
-        if (dispatch) {
-          dispatch({
-            type: UserActionTypes.SetUser,
-            payload: { email, name: displayName, id: uid },
-          });
-        }
+        dispatch({
+          type: "SET_USER",
+          payload: {
+            id: user.uid,
+            email: user.email,
+            name: user.displayName,
+          },
+        });
       } else {
-        if (dispatch) {
-          dispatch({ type: UserActionTypes.SetUser, payload: null });
-        }
+        dispatch({ type: "SET_USER", payload: null });
       }
     });
 
-    return unsubscribe;
+    return () => unsubscribe();
   }, [dispatch]);
 
-  async function handleLogout() {
+  const handleLogout = async () => {
     try {
-      await logout();
+      await signOut(auth);
+      dispatch({ type: "SET_USER", payload: null });
       navigate("/");
     } catch (error) {
       console.error("Error logging out:", error);
       alert("Error logging out. Please try again.");
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -73,7 +77,7 @@ function AppContent() {
             </div>
 
             <div className="flex items-center">
-              {user && user.user ? (
+              {user ? (
                 <div className="flex space-x-2">
                   <NavButton onClick={() => navigate("/user")}>
                     My Account
@@ -122,14 +126,14 @@ function AppContent() {
       </main>
     </div>
   );
-}
+};
 
-function App() {
+export const App: React.FC = (): ReactElement => {
   return (
     <Router>
-      <AppContent />
+      <UserProvider>
+        <AppContent />
+      </UserProvider>
     </Router>
   );
-}
-
-export default App;
+};

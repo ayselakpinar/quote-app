@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
-import QuoteForm from './QuoteForm';
+import QuoteForm from "./QuoteForm";
 import { Title } from "../Title";
 
-export function NewQuotePage() {
+export const NewQuotePage: React.FC = (): React.ReactElement => {
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-2xl mx-auto">
@@ -14,5 +14,4 @@ export function NewQuotePage() {
       </div>
     </div>
   );
-}
-
+};

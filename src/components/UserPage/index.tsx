@@ -1,15 +1,15 @@
-import React, { useContext, useState, useEffect } from "react";
-import { UserContext } from "../../UserContext";
+import React, { useState, useEffect } from "react";
+import { useUserContext } from "../../UserContext";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { useNavigate } from "react-router-dom";
 import { Loading } from "../Shared/Loading";
 import { PageTitle } from "../Shared/PageTitle";
 
-export const UserPage = () => {
-  const { user } = useContext(UserContext);
-  const [likedCount, setLikedCount] = useState([]);
-  const [loading, setLoading] = useState(true);
+export const UserPage: React.FC = (): React.ReactElement => {
+  const { user } = useUserContext();
+  const [likedCount, setLikedCount] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,7 +17,8 @@ export const UserPage = () => {
       navigate("/login");
       return;
     }
-    const fetchLikedCount = async () => {
+
+    const fetchLikedCount = async (): Promise<void> => {
       try {
         const q = query(
           collection(db, "likedQuotes"),
@@ -39,15 +40,19 @@ export const UserPage = () => {
     return <Loading className="text-2xl text-primary-dark" />;
   }
 
+  if (!user) {
+    return <div>Please log in to view your profile.</div>;
+  }
+
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
         <PageTitle className="text-3xl font-bold text-primary-dark mb-6">
-          Welcome, {user?.name || "User"}!
+          Welcome, {user.name || "User"}!
         </PageTitle>
         <div className="space-y-4">
           <p className="text-lg text-gray-700">
-            <span className="font-medium">Email:</span> {user?.email}
+            <span className="font-medium">Email:</span> {user.email}
           </p>
           <p className="text-lg text-gray-700">
             <span className="font-medium">Liked Quotes:</span> {likedCount}

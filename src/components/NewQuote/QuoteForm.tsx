@@ -1,24 +1,40 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
-import { UserContext } from "../../UserContext";
+import { useUserContext } from "../../UserContext";
 import { Label } from "../Shared/Label";
 import { Input } from "../Shared/Input";
 
-const QuoteForm = () => {
-  const { user } = useContext(UserContext);
+interface QuoteFormData {
+  quote: string;
+  author: string;
+  category: string;
+}
+
+interface QuoteData {
+  text: string;
+  author: string;
+  category: string;
+  createdAt: Date;
+  createdBy: string;
+  likedBy: string[];
+  dislikedBy: string[];
+}
+
+const QuoteForm: React.FC = (): React.ReactElement => {
+  const { user } = useUserContext();
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm({
+  } = useForm<QuoteFormData>({
     defaultValues: {
       quote: "",
       author: "",
@@ -26,7 +42,7 @@ const QuoteForm = () => {
     },
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: QuoteFormData): Promise<void> => {
     if (!user || !user.id) {
       setError("You must be logged in to add a quote");
       return;
@@ -36,7 +52,7 @@ const QuoteForm = () => {
       setIsSubmitting(true);
       setError(null);
 
-      const quoteData = {
+      const quoteData: QuoteData = {
         text: data.quote.trim(),
         author: data.author.trim(),
         category: data.category,
@@ -71,7 +87,7 @@ const QuoteForm = () => {
         <Label htmlFor="quote">Quote Text</Label>
         <textarea
           id="quote"
-          rows="4"
+          rows={4}
           {...register("quote", {
             required: "Quote text is required",
             minLength: {

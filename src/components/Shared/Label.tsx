@@ -1,6 +1,12 @@
-import React from "react";
+import React, { ReactNode } from "react";
 
-export const Label = ({
+interface LabelProps {
+  htmlFor?: string;
+  children: ReactNode;
+  className?: string;
+}
+
+export const Label: React.FC<LabelProps> = ({
   htmlFor,
   children,
   className = "block text-primary-dark font-medium mb-2",

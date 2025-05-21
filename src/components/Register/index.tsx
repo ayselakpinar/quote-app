@@ -7,16 +7,28 @@ import { PageTitle } from "../Shared/PageTitle";
 import { Label } from "../Shared/Label";
 import { Input } from "../Shared/Input";
 
-export const Register = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+interface RegisterFormData {
+  email: string;
+  password: string;
+}
+
+export const Register: React.FC = (): React.ReactElement => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
   const dispatch = useContext(UserDispatchContext);
   const navigate = useNavigate();
 
-  const handleRegister = async (e) => {
+  const handleRegister = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
     setError(null);
+
+    if (!dispatch) {
+      setError("Something went wrong. Please try again.");
+      return;
+    }
 
     try {
       const userData = await registerUser(email, password);
@@ -42,7 +54,9 @@ export const Register = () => {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setEmail(e.target.value)
+              }
               placeholder="Email"
               required
             />
@@ -53,7 +67,9 @@ export const Register = () => {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setPassword(e.target.value)
+              }
               placeholder="Password"
               required
             />

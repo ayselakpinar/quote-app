@@ -1,17 +1,35 @@
-import React, { useContext } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../../firebase/config";
-import { UserContext } from "../../UserContext";
+import { useUserContext } from "../../UserContext";
+import { Label } from "../Shared/Label";
+import { Input } from "../Shared/Input";
 
-export function QuoteForm() {
+interface QuoteFormData {
+  quote: string;
+  author: string;
+  category: string;
+}
+
+interface QuoteData {
+  text: string;
+  author: string;
+  category: string;
+  createdAt: Date;
+  createdBy: string;
+  likedBy: string[];
+  dislikedBy: string[];
+}
+
+export const QuoteForm: React.FC = (): React.ReactElement => {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm({
+  } = useForm<QuoteFormData>({
     defaultValues: {
       quote: "",
       author: "",
@@ -19,16 +37,16 @@ export function QuoteForm() {
     },
   });
   const navigate = useNavigate();
-  const { user } = useContext(UserContext);
+  const { user } = useUserContext();
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: QuoteFormData): Promise<void> => {
     if (!user || !user.id) {
       navigate("/login");
       return;
     }
 
     try {
-      await addDoc(collection(db, "quotes"), {
+      const quoteData: QuoteData = {
         text: data.quote.trim(),
         author: data.author.trim(),
         category: data.category,
@@ -36,8 +54,9 @@ export function QuoteForm() {
         createdBy: user.id,
         likedBy: [],
         dislikedBy: [],
-      });
+      };
 
+      await addDoc(collection(db, "quotes"), quoteData);
       reset();
       navigate("/");
     } catch (error) {
@@ -130,4 +149,4 @@ export function QuoteForm() {
       </button>
     </form>
   );
-}
+};
