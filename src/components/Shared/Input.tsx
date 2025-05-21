@@ -1,33 +1,32 @@
-import React, { ChangeEvent } from "react";
+import React, { forwardRef } from "react";
 
-interface InputProps {
-  type?: string;
-  id?: string;
-  placeholder?: string;
-  required?: boolean;
-  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
-  value?: string;
-  className?: string;
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  error?: string;
 }
 
-export const Input: React.FC<InputProps> = ({
-  type = "text",
-  id,
-  placeholder,
-  required = false,
-  onChange,
-  value,
-  className = "",
-}) => {
-  return (
-    <input
-      type={type}
-      id={id}
-      placeholder={placeholder}
-      required={required}
-      value={value}
-      onChange={onChange}
-      className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 ${className}`}
-    />
-  );
-};
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ label, error, className = "", ...props }, ref) => {
+    return (
+      <div className="mb-4">
+        {label && (
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            {label}
+          </label>
+        )}
+        <input
+          ref={ref}
+          className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+            error ? "border-red-500" : ""
+          } ${className}`}
+          {...props}
+        />
+        {error && <p className="text-red-500 text-xs italic mt-1">{error}</p>}
+      </div>
+    );
+  }
+);
+
+Input.displayName = "Input";
+
+export { Input };
